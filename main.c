@@ -4,13 +4,14 @@ int main(const int argc, const char* argv[])
 {
     printf("main: rbtree test\n");
     
-    rbnode *rn = rbnodeNew(NULL);
-    if (isLeaf(rn)) {
-        printf("main: rn is leaf. Yay.\n");
+    rbtree *t = rbtreeNew();
+
+    if (t) {
+        printf("main: rbtree exists!\n");
     } else {
-        printf("main: rn is not as expected :(");
+        printf("main: rbtree does not exist :(");
     }
 
-    rbnodeDel(rn);
+    rbtreeDel(t);
     return 0;
 }

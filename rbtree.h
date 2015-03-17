@@ -17,10 +17,13 @@ typedef struct rbnode {
     struct rbnode *parent;
 } rbnode;
 
-typedef rbnode rbtree;
 
-rbnode *rbnodeNew(void *);
-int isLeaf(rbnode *);
-void rbnodeDel(rbnode *);
+typedef struct rbtree {
+    rbnode *root;
+    rbnode *sentinel;
+} rbtree;
+
+rbtree *rbtreeNew(void);
+void rbtreeDel(rbtree *);
 
 #endif
