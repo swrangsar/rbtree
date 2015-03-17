@@ -17,13 +17,20 @@ typedef struct rbnode {
     struct rbnode *parent;
 } rbnode;
 
+typedef int (*rbcompf) (void *, void *);
+
+typedef struct rbtreeClass {
+    rbcompf compare;
+} rbtreeClass;
 
 typedef struct rbtree {
     rbnode *root;
     rbnode *sentinel;
+    rbtreeClass *klass;
 } rbtree;
 
-rbtree *rbtreeNew(void);
+rbtreeClass *rbtreeClassNew(rbcompf);
+rbtree *rbtreeNew(rbtreeClass *);
 void rbtreeDel(rbtree *);
 
 #endif

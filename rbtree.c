@@ -33,12 +33,21 @@ static void rbnodeDel(rbnode *n)
     n = NULL;
 }
 
-rbtree *rbtreeNew(void)
+rbtreeClass *rbtreeClassNew(rbcompf fa)
+{
+    rbtreeClass *k = malloc(sizeof(rbtreeClass));
+    memcheck(k);
+    k->compare = fa;
+    return k;
+}
+
+rbtree *rbtreeNew(rbtreeClass *k)
 {
     rbtree *rt = malloc(sizeof(rbtree));
     memcheck(rt);
     rt->root = NULL;
     rt->sentinel = rbnodeNew(NULL);
+    rt->klass = k;
     return rt;
 }
 
@@ -46,6 +55,7 @@ void rbtreeDel(rbtree *t)
 {
     if (t->root) _rbtreeDel(t->root);
     rbnodeDel(t->sentinel);
+    free(t->klass);
     free(t);
     t = NULL;
 }
