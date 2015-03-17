@@ -5,7 +5,7 @@
 static rbnode *rbnodeNew(void *);
 static int isLeaf(rbnode *);
 static void rbnodeDel(rbnode *);
-static void rbtreeDelRec(rbnode *);
+static void _rbtreeDel(rbnode *);
 
 static rbnode *rbnodeNew(void *data)
 {
@@ -44,15 +44,15 @@ rbtree *rbtreeNew(void)
 
 void rbtreeDel(rbtree *t)
 {
-    if (t->root) rbtreeDelRec(t->root);
+    if (t->root) _rbtreeDel(t->root);
     rbnodeDel(t->sentinel);
     free(t);
     t = NULL;
 }
 
-static void rbtreeDelRec(rbnode *n)
+static void _rbtreeDel(rbnode *n)
 {
-    if (n->left) rbtreeDelRec(n->left);
-    if (n->right) rbtreeDelRec(n->right);
+    if (n->left) _rbtreeDel(n->left);
+    if (n->right) _rbtreeDel(n->right);
     rbnodeDel(n);
 }
