@@ -32,5 +32,6 @@ typedef struct rbtree {
 rbtreeClass *rbtreeClassNew(rbcompf);
 rbtree *rbtreeNew(rbtreeClass *);
 void rbtreeDel(rbtree *);
+void rbtreeInsert(rbtree *, void *);
 
 #endif

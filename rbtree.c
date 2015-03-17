@@ -6,6 +6,7 @@ static rbnode *rbnodeNew(void *);
 static int isLeaf(rbnode *);
 static void rbnodeDel(rbnode *);
 static void _rbtreeDel(rbnode *);
+static void _rbtreeInsert(rbtree *, rbnode *, rbnode *);
 
 static rbnode *rbnodeNew(void *data)
 {
@@ -65,4 +66,41 @@ static void _rbtreeDel(rbnode *n)
     if (n->left) _rbtreeDel(n->left);
     if (n->right) _rbtreeDel(n->right);
     rbnodeDel(n);
+}
+
+void rbtreeInsert(rbtree *t, void *data)
+{
+    rbnode *n = rbnodeNew((void *)data);
+    if (!t || !data) {
+        printf("rbtreeInsert: either the tree or the data is null!\n");
+        return;
+    }
+    if (!t->root) {
+        t->root = n;
+    } else {
+        _rbtreeInsert(t, t->root, n);
+    }
+}
+
+static void _rbtreeInsert(rbtree *t, rbnode *r, rbnode *n)
+{
+    int res = t->klass->compare(n->data, r->data);
+    if (res < 0) {
+        if (r->left) {
+            _rbtreeInsert(t, r->left, n);
+        } else {
+            r->left = n;
+            n->parent = r;
+        }
+    } else if (res > 0) {
+        if (r->right) {
+            _rbtreeInsert(t, r->right, n);
+        } else {
+            r->right = n;
+            n->parent = r;
+        }
+    } else {
+        printf("_rbtreeInsert: rbnode already exist!\n");
+        return;
+    }
 }
