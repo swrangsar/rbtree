@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "debug.h"
 
 #define BLACK   (unsigned char)0
 #define RED     (unsigned char)1
@@ -18,7 +19,7 @@ typedef struct rbnode {
 typedef int (*rbcompf) (void *, void *);
 
 typedef struct rbtreeClass {
-    rbcompf compare;
+    rbcompf cmp;
 } rbtreeClass;
 
 typedef struct rbtree {
