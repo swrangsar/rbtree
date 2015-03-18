@@ -7,6 +7,7 @@ static int isLeaf(rbnode *);
 static void rbnodeDel(rbnode *);
 static void _rbtreeDel(rbnode *);
 static void _rbtreeInsert(rbtree *, rbnode *, rbnode *);
+static rbnode *uncle(rbnode *);
 static void insert_case1(rbnode *);
 static void insert_case2(rbnode *);
 static void insert_case3(rbnode *);
@@ -110,6 +111,15 @@ static void _rbtreeInsert(rbtree *t, rbnode *r, rbnode *n)
     }
 }
 
+static rbnode *uncle(rbnode *n)
+{
+    rbnode *p, *g;
+    if (n && (p = n->parent) && (g = n->parent->parent)) {
+        return (p == g->left)?(g->right):(g->left);
+    } 
+    return NULL;
+}
+
 static void insert_case1(rbnode *n)
 {
     if (!(n->parent)) {
@@ -128,4 +138,5 @@ static void insert_case2(rbnode *n)
 
 static void insert_case3(rbnode *n)
 {
+    
 }
