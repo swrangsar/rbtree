@@ -4,13 +4,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef enum {
-    BLACK,
-    RED
-} Color;
+#define BLACK   (unsigned char)0
+#define RED     (unsigned char)1
 
 typedef struct rbnode {
-    Color color;
+    unsigned char color;
     void *data;
     struct rbnode *left;
     struct rbnode *right;
@@ -25,7 +23,6 @@ typedef struct rbtreeClass {
 
 typedef struct rbtree {
     rbnode *root;
-    rbnode *sentinel;
     rbtreeClass *klass;
 } rbtree;
 
