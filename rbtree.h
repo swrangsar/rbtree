@@ -23,12 +23,13 @@ typedef struct rbtreeClass {
 
 typedef struct rbtree {
     rbnode *root;
+    rbnode *leaf;
     rbtreeClass *klass;
 } rbtree;
 
-rbtreeClass *rbtreeClassNew(rbcompf);
+rbtreeClass *rbtreeClassNew(const rbcompf);
 rbtree *rbtreeNew(rbtreeClass *);
 void rbtreeDel(rbtree *);
-void rbtreeInsert(rbtree *, void *);
+void rbtreeInsert(rbtree *, const void *);
 
 #endif
