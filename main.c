@@ -4,19 +4,24 @@ int compare(void *, void *);
 
 int compare(void *a, void *b)
 {
-    printf("compare: entered\n");
     int ia = *(int *)a;
     int ib = *(int *)b;
-    printf("compare: after inits\n");
     if (ia == ib) {
-        printf("compare: eq\n");
         return 0;
     } else if (ia < ib) {
-        printf("compare: lt\n");
         return -1;
     } else {
-        printf("compare: gt\n");
         return 1;
+    }
+}
+
+void destroy(void *data)
+{
+    if (data) {
+        printf("freeing int* data.. %d\n", *(int *)data);
+        free((int *)data);
+    } else {
+        errcheck(data, "data is null in destroy()!");
     }
 }
 
@@ -24,7 +29,7 @@ int main(const int argc, const char* argv[])
 {
     printf("main: rbtree test\n");
     
-    rbtreeClass *k = rbtreeClassNew((rbcompf)compare);
+    rbtreeClass *k = rbtreeClassNew((rbcmpf)compare, (rbdstf)destroy);
 
     if (k) printf("main: rbtreeClass created.\n");
     rbtree *t = rbtreeNew(k);
@@ -37,7 +42,7 @@ int main(const int argc, const char* argv[])
     }
 
     int i, h;
-    for (i=0, h=0; i < 10; i++) {
+    for (i=0, h=1; i < 10; i++) {
         int *ndata = malloc(sizeof(int));
         memcheck(ndata);
         *ndata = (h++) % 1000;
@@ -46,6 +51,10 @@ int main(const int argc, const char* argv[])
         printf("h = %d\n", *ndata);
     }
     printf("i = %d\n", i);
+
+    if (t->root) {
+        printf("root data = %d\n", *(int *)t->root->data);
+    }
 
     rbtreeDel(t);
     return 0;

@@ -16,19 +16,20 @@ typedef struct rbnode {
     struct rbnode *parent;
 } rbnode;
 
-typedef int (*rbcompf) (void *, void *);
+typedef int (*rbcmpf) (void *, void *);
+typedef void (*rbdstf) (void *);
 
 typedef struct rbtreeClass {
-    rbcompf cmp;
+    rbcmpf cmp;
+    rbdstf dst;
 } rbtreeClass;
 
 typedef struct rbtree {
     rbnode *root;
-    rbnode *leaf;
     rbtreeClass *klass;
 } rbtree;
 
-rbtreeClass *rbtreeClassNew(const rbcompf);
+rbtreeClass *rbtreeClassNew(const rbcmpf, const rbdstf);
 rbtree *rbtreeNew(rbtreeClass *);
 void rbtreeDel(rbtree *);
 void rbtreeInsert(rbtree *, const void *);
