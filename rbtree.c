@@ -16,6 +16,55 @@ static void insert_case3(rbtree *, rbnode *);
 static void insert_case4(rbtree *, rbnode *);
 static void insert_case5(rbtree *, rbnode *);
 
+rbtreeClass *rbtreeClassNew(const rbcmpf fa, const rbdstf fb)
+{
+    rbtreeClass *k = malloc(sizeof(rbtreeClass));
+    memcheck(k);
+    k->cmp = fa;
+    k->dst = fb;
+    return k;
+}
+
+rbtree *rbtreeNew(rbtreeClass *k)
+{
+    rbtree *t = malloc(sizeof(rbtree));
+    memcheck(t);
+    t->root = NULL;
+    t->klass = k;
+    return t;
+}
+
+void rbtreeDel(rbtree *t)
+{
+    errcheck(t, "rbtree is null!");
+    if (t->root) _rbtreeDel(t, t->root);
+    if (t->klass) rbtreeClassDel(t->klass);
+    t->root = NULL;
+    t->klass = NULL;
+    free(t);
+    t = NULL;
+}
+
+void rbtreeInsert(rbtree *t, const void *data)
+{
+    rbnode *n = rbnodeNew((void *)data);
+    errcheck(t, "rbtreeInsert: tree is null!");
+    errcheck(data, "rbtreeInsert: data is null!");
+
+    if (!t->root) {
+        t->root = n;
+        insert_case1(t, n);
+    } else {
+        _rbtreeInsert(t, t->root, n);
+        insert_case2(t, n);
+    }
+}
+
+
+// ******************************************
+//      Static functions
+// ******************************************
+
 static rbnode *rbnodeNew(const void *data)
 {
     rbnode *n = malloc(sizeof(rbnode));
@@ -42,14 +91,6 @@ static void rbnodeDel(rbtree *t, rbnode *n)
     n = NULL;
 }
 
-rbtreeClass *rbtreeClassNew(const rbcmpf fa, const rbdstf fb)
-{
-    rbtreeClass *k = malloc(sizeof(rbtreeClass));
-    memcheck(k);
-    k->cmp = fa;
-    k->dst = fb;
-    return k;
-}
 
 static void rbtreeClassDel(rbtreeClass *k)
 {
@@ -59,47 +100,12 @@ static void rbtreeClassDel(rbtreeClass *k)
     k = NULL;
 }
 
-rbtree *rbtreeNew(rbtreeClass *k)
-{
-    rbtree *t = malloc(sizeof(rbtree));
-    memcheck(t);
-    t->root = NULL;
-    t->klass = k;
-    return t;
-}
-
-void rbtreeDel(rbtree *t)
-{
-    errcheck(t, "rbtree is null!");
-    if (t->root) _rbtreeDel(t, t->root);
-    if (t->klass) rbtreeClassDel(t->klass);
-    t->root = NULL;
-    t->klass = NULL;
-    free(t);
-    t = NULL;
-}
-
 static void _rbtreeDel(rbtree *t, rbnode *n)
 {
     errcheck(t, "rbtree is null!");
     if (n->left) _rbtreeDel(t, n->left);
     if (n->right) _rbtreeDel(t, n->right);
     rbnodeDel(t, n);
-}
-
-void rbtreeInsert(rbtree *t, const void *data)
-{
-    rbnode *n = rbnodeNew((void *)data);
-    errcheck(t, "rbtreeInsert: tree is null!");
-    errcheck(data, "rbtreeInsert: data is null!");
-
-    if (!t->root) {
-        t->root = n;
-        insert_case1(t, n);
-    } else {
-        _rbtreeInsert(t, t->root, n);
-        insert_case2(t, n);
-    }
 }
 
 static void _rbtreeInsert(rbtree *t, rbnode *r, rbnode *n)
