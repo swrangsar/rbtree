@@ -1,4 +1,6 @@
 CC=gcc
+#CFLAGS= -g -Wall -D__DEBUG__
+CFLAGS= -g -Wall
 
 all: rbtree
 

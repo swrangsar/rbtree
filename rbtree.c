@@ -128,7 +128,7 @@ static void _rbtreeInsert(rbtree *t, rbnode *r, rbnode *n)
             n->parent = r;
         }
     } else {
-        printf("_rbtreeInsert: rbnode already exist!\n");
+        debug("_rbtreeInsert: rbnode already exist!\n");
         rbnodeDel(t, n);
         return;
     }
@@ -193,7 +193,7 @@ static void rotate_right(rbnode *n)
 
 static void insert_case1(rbtree *t, rbnode *n)
 {
-    printf("insert case 1\n");
+    debug("insert case 1\n");
     if (!(n->parent)) {
         n->color = BLACK;
     } else {
@@ -203,7 +203,7 @@ static void insert_case1(rbtree *t, rbnode *n)
 
 static void insert_case2(rbtree *t, rbnode *n)
 {
-    printf("insert case 2\n");
+    debug("insert case 2\n");
     rbnode *p = n->parent;
     errcheck(p, "p is null!");
     if (p->color == BLACK) return;
@@ -212,7 +212,7 @@ static void insert_case2(rbtree *t, rbnode *n)
 
 static void insert_case3(rbtree *t, rbnode *n)
 {
-    printf("insert case 3\n");
+    debug("insert case 3\n");
     rbnode *p = n->parent;
     rbnode *g = grandparent(n);
     rbnode *u = uncle(n);
@@ -231,7 +231,7 @@ static void insert_case3(rbtree *t, rbnode *n)
 
 static void insert_case4(rbtree *t, rbnode *n)
 {
-    printf("insert case 4\n");
+    debug("insert case 4\n");
     rbnode *p = n->parent;
     rbnode *g = grandparent(n);
     errcheck(p, "parent does not exist!");
@@ -250,7 +250,7 @@ static void insert_case4(rbtree *t, rbnode *n)
 
 static void insert_case5(rbtree *t, rbnode *n)
 {
-    printf("insert case 5\n");
+    debug("insert case 5\n");
     rbnode *p = n->parent;
     rbnode *g = grandparent(n);
     errcheck(p, "parent does not exist!");
@@ -259,7 +259,7 @@ static void insert_case5(rbtree *t, rbnode *n)
     g->color = RED;
     (n == p->left)?rotate_right(g):rotate_left(g);
     if (!(p->parent)) {
-        printf("insert_case5: p parent is null!\n");
+        debug("insert_case5: p parent is null!\n");
         t->root = p;
     }
 }
