@@ -45,11 +45,11 @@ int main(const int argc, const char* argv[])
     for (i=0, h=1; i < 10; i++) {
         int *ndata = malloc(sizeof(int));
         memcheck(ndata);
-        *ndata = (h++) % 1000;
+        *ndata = (h++) % 10;
         h ^= h << 3;
         h ^= h >> 5;
-        rbtreeInsert(t, (void *)ndata);
         printf("h = %d\n", *ndata);
+        rbtreeInsert(t, (void *)ndata);
     }
     printf("i = %d\n", i);
 
