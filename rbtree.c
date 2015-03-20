@@ -16,6 +16,8 @@ static void insert_case3(rbtree *, rbnode *);
 static void insert_case4(rbtree *, rbnode *);
 static void insert_case5(rbtree *, rbnode *);
 
+static rbnode *sibling(const rbnode*);
+
 rbtreeClass *rbtreeClassNew(const rbcmpf fa, const rbdstf fb)
 {
     rbtreeClass *k = malloc(sizeof(rbtreeClass));
@@ -262,4 +264,12 @@ static void insert_case5(rbtree *t, rbnode *n)
         debug("insert_case5: p parent is null!\n");
         t->root = p;
     }
+}
+
+
+static rbnode *sibling(const rbnode *n)
+{
+    rbnode *p = n->parent;
+    errcheck(p, "sibling: parent shouldn't be null!");
+    return (n == p->left)?(p->right):(p->left);
 }
