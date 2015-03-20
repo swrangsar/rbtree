@@ -299,6 +299,7 @@ static void insert_case5(rbtree *t, rbnode *n)
 
 static rbnode *sibling(const rbnode *n)
 {
+    errcheck(n, "sibling: node n shouldn't be null!");
     rbnode *p = n->parent;
     errcheck(p, "sibling: parent shouldn't be null!");
     return (n == p->left)?(p->right):(p->left);
