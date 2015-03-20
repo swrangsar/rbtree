@@ -47,6 +47,7 @@ int main(const int argc, const char* argv[])
         memcheck(ndata);
         *ndata = (h++) % 1000;
         h ^= h << 3;
+        h ^= h >> 5;
         rbtreeInsert(t, (void *)ndata);
         printf("h = %d\n", *ndata);
     }

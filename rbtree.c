@@ -16,7 +16,7 @@ static void insert_case3(rbtree *, rbnode *);
 static void insert_case4(rbtree *, rbnode *);
 static void insert_case5(rbtree *, rbnode *);
 
-static rbnode *sibling(const rbnode*);
+static rbnode *sibling(const rbnode *);
 
 rbtreeClass *rbtreeClassNew(const rbcmpf fa, const rbdstf fb)
 {
@@ -64,7 +64,7 @@ void rbtreeInsert(rbtree *t, const void *data)
 
 
 // ******************************************
-//      Static functions
+//      static functions
 // ******************************************
 
 static rbnode *rbnodeNew(const void *data)
@@ -112,6 +112,7 @@ static void _rbtreeDel(rbtree *t, rbnode *n)
 
 static void _rbtreeInsert(rbtree *t, rbnode *r, rbnode *n)
 {
+    errcheck(t, "tree can't be null!");
     errcheck(r, "rbnode *r is null!");
     errcheck(n, "rbnode *n is null!");
     int res = t->klass->cmp(n->data, r->data);
@@ -130,11 +131,35 @@ static void _rbtreeInsert(rbtree *t, rbnode *r, rbnode *n)
             n->parent = r;
         }
     } else {
-        debug("_rbtreeInsert: rbnode already exist!\n");
-        rbnodeDel(t, n);
+        debug("_rbtreeInsert: rbnode already exist!\nreplacing node...\n");
+        
+        rbnode *op = r->parent;
+        rbnode *ol = r->left;
+        rbnode *or = r->right;
+        if (op) {
+            if (r == op->left) {
+                op->left = n;
+            } else {
+                op->right = n;
+            }
+        } else {
+            t->root = n;
+        }
+        if (ol) ol->parent = n;
+        if (or) or->parent = n;
+        r->parent = n->parent;
+        r->left = n->left;
+        r->right = n->right;
+        
+        n->parent = op;
+        n->left = ol;
+        n->right = or;
+        
+        rbnodeDel(t, r);
         return;
     }
 }
+
 
 static rbnode *grandparent(const rbnode *n)
 {
@@ -265,6 +290,11 @@ static void insert_case5(rbtree *t, rbnode *n)
         t->root = p;
     }
 }
+
+
+// ****************************
+// removal functions
+// ****************************
 
 
 static rbnode *sibling(const rbnode *n)
