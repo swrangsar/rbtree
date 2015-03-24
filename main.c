@@ -41,11 +41,13 @@ int main(const int argc, const char* argv[])
         return -1;
     }
 
+    int iDel = 0;
     int i, h;
     for (i=0, h=1; i < 10; i++) {
         int *ndata = malloc(sizeof(int));
         memcheck(ndata);
         *ndata = (h++) % 10;
+        if (i == 5) iDel = *ndata;
         h ^= h << 3;
         h ^= h >> 5;
         printf("h = %d\n", *ndata);
@@ -57,6 +59,14 @@ int main(const int argc, const char* argv[])
         printf("root data = %d\n", *(int *)t->root->data);
     }
 
+    printf("constructing data out of iDel...\n");
+    int *delData = malloc(sizeof(int));
+    memcheck(delData);
+    *delData = iDel;
+    printf("*delData is %d\n", *delData);
+    rbtreeRemove(t, delData);
+
+    free(delData);
     rbtreeDel(t);
     return 0;
 }

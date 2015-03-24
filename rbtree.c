@@ -346,6 +346,6 @@ static void rbnodeRemove(rbtree *t, rbnode *n)
 {
     errcheck(t, "tree is null!");
     errcheck(n, "node is null!");
-    printf("%p is supposed to be deleted!\n", n->data);
+    printf("%d is supposed to be deleted!\n", *(int *)n->data);
 }
 
