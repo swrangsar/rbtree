@@ -20,6 +20,8 @@ static void insert_case5(rbtree *, rbnode *);
 static rbnode *sibling(const rbnode *);
 static void _rbtreeRemove(rbtree *, rbnode *, const void *);
 static void rbnodeRemove(rbtree *, rbnode *);
+static rbnode *getPred(rbtree *, rbnode *);
+static void removeChild(rbtree *, rbnode *);
 
 rbtreeClass *rbtreeClassNew(const rbcmpf fa, const rbdstf fb)
 {
@@ -347,5 +349,29 @@ static void rbnodeRemove(rbtree *t, rbnode *n)
     errcheck(t, "tree is null!");
     errcheck(n, "node is null!");
     printf("%d is supposed to be deleted!\n", *(int *)n->data);
+    rbnode *p = n;
+    if (n->left && n->right) {
+        p = getPred(t, n);
+        void *tempData = n->data;
+        n->data = p->data;
+        p->data = tempData;
+    }
+    removeChild(t, p);
 }
 
+static rbnode *getPred(rbtree *t, rbnode *n)
+{
+    errcheck(t, "tree is null!");
+    errcheck(n, "node is null!");
+    errcheck(n->left, "predecessor is null!");
+    rbnode *p = n->left;
+    while (p->right) {
+        p = p->right;
+    }
+    return p;
+}
+
+static void removeChild(rbtree *t, rbnode *n)
+{
+    printf("trying to remove child with data %d\n", *(int *) n->data);
+}
