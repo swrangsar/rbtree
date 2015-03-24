@@ -16,7 +16,7 @@ typedef struct rbnode {
     struct rbnode *parent;
 } rbnode;
 
-typedef int (*rbcmpf) (void *, void *);
+typedef int (*rbcmpf) (const void *, const void *);
 typedef void (*rbdstf) (void *);
 
 typedef struct rbtreeClass {
@@ -33,5 +33,6 @@ rbtreeClass *rbtreeClassNew(const rbcmpf, const rbdstf);
 rbtree *rbtreeNew(rbtreeClass *);
 void rbtreeDel(rbtree *);
 void rbtreeInsert(rbtree *, const void *);
+void rbtreeRemove(rbtree *, const void *);
 
 #endif

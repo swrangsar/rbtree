@@ -16,7 +16,10 @@ static void insert_case3(rbtree *, rbnode *);
 static void insert_case4(rbtree *, rbnode *);
 static void insert_case5(rbtree *, rbnode *);
 
+
 static rbnode *sibling(const rbnode *);
+static void _rbtreeRemove(rbtree *, rbnode *, const void *);
+static void rbnodeRemove(rbtree *, rbnode *);
 
 rbtreeClass *rbtreeClassNew(const rbcmpf fa, const rbdstf fb)
 {
@@ -60,6 +63,14 @@ void rbtreeInsert(rbtree *t, const void *data)
         _rbtreeInsert(t, t->root, n);
         insert_case2(t, n);
     }
+}
+
+void rbtreeRemove(rbtree *t, const void *data)
+{
+    errcheck(t, "rbtreeRemove: tree shouldn't be null!");
+    errcheck(data, "rbtreeRemove: data shouldn't be null!");
+    if (!t->root) return; 
+    _rbtreeRemove(t, t->root, data);
 }
 
 
@@ -304,3 +315,37 @@ static rbnode *sibling(const rbnode *n)
     errcheck(p, "sibling: parent shouldn't be null!");
     return (n == p->left)?(p->right):(p->left);
 }
+
+
+static void _rbtreeRemove(rbtree *t, rbnode *n, const void *d)
+{
+    errcheck(t, "tree is null!");
+    errcheck(n, "node is null!");
+    errcheck(d, "data is null!");
+    errcheck(t->klass, "tree klass is null!");
+    errcheck(t->klass->cmp, "cmp fn ptr is null!");
+    int res = t->klass->cmp(d, n->data);
+    if (!res) {
+        rbnodeRemove(t, n);
+    } else if (res < 0) {
+        if (n->left) {
+            _rbtreeRemove(t, n->left, d);
+        } else {
+            return;
+        }
+    } else {
+        if (n->right) {
+            _rbtreeRemove(t, n->right, d);
+        } else {
+            return;
+        }
+    }
+}
+
+static void rbnodeRemove(rbtree *t, rbnode *n)
+{
+    errcheck(t, "tree is null!");
+    errcheck(n, "node is null!");
+    printf("%p is supposed to be deleted!\n", n->data);
+}
+

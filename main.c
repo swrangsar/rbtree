@@ -1,8 +1,8 @@
 #include "rbtree.h"
 
-int compare(void *, void *);
+int compare(const void *, const void *);
 
-int compare(void *a, void *b)
+int compare(const void *a, const void *b)
 {
     int ia = *(int *)a;
     int ib = *(int *)b;
