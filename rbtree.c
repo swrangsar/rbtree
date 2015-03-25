@@ -28,6 +28,7 @@ static void remove_case2(rbtree *, rbnode *);
 static void remove_case3(rbtree *, rbnode *);
 static void remove_case4(rbtree *, rbnode *);
 static void remove_case5(rbtree *, rbnode *);
+static void remove_case6(rbtree *, rbnode *);
 
 
 rbtreeClass *rbtreeClassNew(const rbcmpf fa, const rbdstf fb)
@@ -440,13 +441,13 @@ static void remove_case2(rbtree *t, rbnode *n)
     rbnode *g = p->parent;
     
     if (s->color == RED) {
+        p->color = RED;
+        s->color = BLACK;
         if (n == p->left) {
             rotate_left(p);
         } else {
             rotate_right(p);
         }
-        p->color = RED;
-        s->color = BLACK;
         if (!g) t->root = s;
     }
     remove_case3(t, n);
@@ -494,5 +495,33 @@ static void remove_case5(rbtree *t, rbnode *n)
 {
     errcheck(t, "tree is null!");
     errcheck(n, "node is null!");
-    printf("remove_case5 entered\n");
+    rbnode *p = n->parent;
+    rbnode *s = sibling(n);
+    errcheck(p, "parent is null!");
+    errcheck(s, "sibling is null!");
+    errcheck((s->color == BLACK), "sibling is red!");
+
+    if (n == p->left &&
+        (s->left && s->left->color == RED) &&
+        (!s->right || s->right->color == BLACK)) {
+        s->color = RED;
+        s->left->color = BLACK;
+        rotate_right(s);
+    } else if (n == p->right &&
+        (s->right && s->right->color == RED) &&
+        (!s->left || s->left->color == BLACK)) {
+        s->color = RED;
+        s->right->color = BLACK;
+        rotate_left(s);
+    } else {
+    }
+    remove_case6(t, n);
+}
+
+
+static void remove_case6(rbtree *t, rbnode *n)
+{
+    errcheck(t, "tree is null!");
+    errcheck(n, "node is null!");
+    printf("remove_case6 entered\n");
 }
