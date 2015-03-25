@@ -24,6 +24,9 @@ static rbnode *getPred(rbtree *, rbnode *);
 static void removeChild(rbtree *, rbnode *);
 static void replaceChild(rbtree *, rbnode *, rbnode *);
 static void remove_case1(rbtree *, rbnode *);
+static void remove_case2(rbtree *, rbnode *);
+static void remove_case3(rbtree *, rbnode *);
+
 
 rbtreeClass *rbtreeClassNew(const rbcmpf fa, const rbdstf fb)
 {
@@ -420,5 +423,36 @@ static void remove_case1(rbtree *t, rbnode *n)
 {
     errcheck(t, "tree is null!");
     errcheck(n, "node is null!");
-    printf("remove_case1 entered\n");
+    if (n->parent) remove_case2(t, n);
+    return;
+}
+
+static void remove_case2(rbtree *t, rbnode *n)
+{
+    errcheck(t, "tree is null!");
+    errcheck(n, "node is null!");
+    rbnode *p = n->parent;
+    errcheck(p, "parent is null!");
+    rbnode *s = sibling(n);
+    errcheck(s, "sibling is null!");
+    rbnode *g = p->parent;
+    
+    if (s->color == RED) {
+        if (n == p->left) {
+            rotate_left(p);
+        } else {
+            rotate_right(p);
+        }
+        p->color = RED;
+        s->color = BLACK;
+        if (!g) t->root = s;
+    }
+    remove_case3(t, n);
+}
+
+static void remove_case3(rbtree *t, rbnode *n)
+{
+    errcheck(t, "tree is null!");
+    errcheck(n, "node is null!");
+    printf("remove_case3 entered\n");
 }
