@@ -71,7 +71,7 @@ void rbtreeInsert(rbtree *t, const void *data)
         insert_case1(t, n);
     } else {
         _rbtreeInsert(t, t->root, n);
-        insert_case2(t, n);
+        insert_case1(t, n);
     }
 }
 
@@ -157,6 +157,7 @@ static void _rbtreeInsert(rbtree *t, rbnode *r, rbnode *n)
         rbnode *op = r->parent;
         rbnode *ol = r->left;
         rbnode *or = r->right;
+        unsigned char oc = r->color;
         if (op) {
             if (r == op->left) {
                 op->left = n;
@@ -175,6 +176,7 @@ static void _rbtreeInsert(rbtree *t, rbnode *r, rbnode *n)
         n->parent = op;
         n->left = ol;
         n->right = or;
+        n->color = oc;
         
         rbnodeDel(t, r);
         return;
