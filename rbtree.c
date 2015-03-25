@@ -22,6 +22,8 @@ static void _rbtreeRemove(rbtree *, rbnode *, const void *);
 static void rbnodeRemove(rbtree *, rbnode *);
 static rbnode *getPred(rbtree *, rbnode *);
 static void removeChild(rbtree *, rbnode *);
+static void replaceChild(rbtree *, rbnode *, rbnode *);
+static void remove_case1(rbtree *, rbnode *);
 
 rbtreeClass *rbtreeClassNew(const rbcmpf fa, const rbdstf fb)
 {
@@ -374,4 +376,49 @@ static rbnode *getPred(rbtree *t, rbnode *n)
 static void removeChild(rbtree *t, rbnode *n)
 {
     printf("trying to remove child with data %d\n", *(int *) n->data);
+    errcheck(t, "tree is null!");
+    errcheck(n, "node is null!");
+    rbnode *c = (n->left)?(n->left):(n->right);
+
+    if (n->color == BLACK) {
+        if (c && c->color == RED)
+            c->color = BLACK;
+        else
+            remove_case1(t, n);
+    }
+    replaceChild(t, n, c);
+    rbnodeDel(t, n);
+}
+
+static void replaceChild(rbtree *t, rbnode *n, rbnode *c)
+{
+    errcheck(t, "tree is null!");
+    errcheck(n, "node is null!");
+    rbnode *p = n->parent;
+    if (p) {
+        if (n == p->left) {
+            p->left = c;
+        } else {
+            p->right = c;
+        }
+        if (c) c->parent = p;
+    } else {
+        t->root = c;
+        if (c) c->parent = NULL;
+    }
+    if (c) {
+        unsigned char tempc = c->color;
+        c->color = n->color;
+        n->color = tempc;
+    } else {
+        n->color = BLACK;
+    }
+}
+
+
+static void remove_case1(rbtree *t, rbnode *n)
+{
+    errcheck(t, "tree is null!");
+    errcheck(n, "node is null!");
+    printf("remove_case1 entered\n");
 }
