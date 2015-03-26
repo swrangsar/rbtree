@@ -54,7 +54,7 @@ int main(const int argc, const char* argv[])
 
     int iDel = 0;
     int i, h;
-    for (i=0, h=7; i < 10; i++) {
+    for (i=0, h=0; i < 10; i++) {
         int *ndata = malloc(sizeof(int));
         memcheck(ndata);
         *ndata = (h++) % 10;

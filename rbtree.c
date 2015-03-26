@@ -5,7 +5,7 @@ static rbnode *rbnodeNew(const void *);
 static void rbtreeClassDel(rbtreeClass *);
 static void rbnodeDel(rbtree *, rbnode *);
 static void _rbtreeDel(rbtree *, rbnode *);
-static void _rbtreeInsert(rbtree *, rbnode *, rbnode *);
+static int _rbtreeInsert(rbtree *, rbnode *, rbnode *);
 static rbnode *grandparent(const rbnode *);
 static rbnode *uncle(const rbnode *);
 static void rotate_left(rbnode *);
@@ -71,8 +71,8 @@ void rbtreeInsert(rbtree *t, const void *data)
         t->root = n;
         insert_case1(t, n);
     } else {
-        _rbtreeInsert(t, t->root, n);
-        insert_case1(t, n);
+        int res = _rbtreeInsert(t, t->root, n);
+        if (res) insert_case1(t, n);
     }
 }
 
@@ -133,7 +133,7 @@ static void _rbtreeDel(rbtree *t, rbnode *n)
     rbnodeDel(t, n);
 }
 
-static void _rbtreeInsert(rbtree *t, rbnode *r, rbnode *n)
+static int _rbtreeInsert(rbtree *t, rbnode *r, rbnode *n)
 {
     errcheck(t, "tree can't be null!");
     errcheck(r, "rbnode *r is null!");
@@ -141,17 +141,19 @@ static void _rbtreeInsert(rbtree *t, rbnode *r, rbnode *n)
     int res = t->klass->cmp(n->data, r->data);
     if (res < 0) {
         if (r->left) {
-            _rbtreeInsert(t, r->left, n);
+            return _rbtreeInsert(t, r->left, n);
         } else {
             r->left = n;
             n->parent = r;
+            return -1;
         }
     } else if (res > 0) {
         if (r->right) {
-            _rbtreeInsert(t, r->right, n);
+            return _rbtreeInsert(t, r->right, n);
         } else {
             r->right = n;
             n->parent = r;
+            return 1;
         }
     } else {
         debug("_rbtreeInsert: rbnode already exist!\nreplacing node...\n");
@@ -181,7 +183,13 @@ static void _rbtreeInsert(rbtree *t, rbnode *r, rbnode *n)
         n->color = oc;
         
         rbnodeDel(t, r);
-        return;
+        return 0;
+//        void *td = r->data;
+//        r->data = n->data;
+//        n->data = td;
+//        rbnodeDel(t, n);
+//        n = NULL;
+//        return;
     }
 }
 
