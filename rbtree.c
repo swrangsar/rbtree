@@ -10,11 +10,7 @@ static rbnode *grandparent(const rbnode *);
 static rbnode *uncle(const rbnode *);
 static void rotate_left(rbnode *);
 static void rotate_right(rbnode *);
-static void insert_case1(rbtree *, rbnode *);
-static void insert_case2(rbtree *, rbnode *);
-static void insert_case3(rbtree *, rbnode *);
-static void insert_case4(rbtree *, rbnode *);
-static void insert_case5(rbtree *, rbnode *);
+static void insert_cases(rbtree *, rbnode *);
 
 
 static rbnode *sibling(const rbnode *);
@@ -69,10 +65,10 @@ void rbtreeInsert(rbtree *t, const void *data)
 
     if (!t->root) {
         t->root = n;
-        insert_case1(t, n);
+        insert_cases(t, n);
     } else {
         int res = _rbtreeInsert(t, t->root, n);
-        if (res) insert_case1(t, n);
+        if (res) insert_cases(t, n);
     }
 }
 
@@ -251,77 +247,57 @@ static void rotate_right(rbnode *n)
     if (n->left) n->left->parent = n;
 }
     
-
-static void insert_case1(rbtree *t, rbnode *n)
+static void insert_cases(rbtree *t, rbnode *n)
 {
-    debug("insert case 1\n");
-    if (!(n->parent)) {
-        n->color = BLACK;
-    } else {
-        insert_case2(t, n);
-    }
-}
+    while (1) {
+        debug("insert case 1\n");
+        errcheck(n, "new inserted node cannot be null!");
+        rbnode *p = n->parent;
+        if (!p) {
+            n->color = BLACK;
+            return;
+        }
 
-static void insert_case2(rbtree *t, rbnode *n)
-{
-    debug("insert case 2\n");
-    rbnode *p = n->parent;
-    errcheck(p, "p is null!");
-    if (p->color == BLACK) return;
-    insert_case3(t, n);
-}
+        debug("insert case 2\n");
+        errcheck(p, "p is null!");
+        if (p->color == BLACK) return;
+        
+        debug("insert case 3\n");
+        rbnode *g = grandparent(n);
+        rbnode *u = uncle(n);
+        errcheck(g, "grandparent does not exist!");
+        if (u && RED == u->color) {
+            p->color = BLACK;
+            u->color = BLACK;
+            g->color = RED;
+            n = g;
+            continue;
+        }
+        
+        debug("insert case 4\n");
+        if (n == p->right && p == g->left) {
+            rotate_left(p);
+            n = p;
+        } else if (n == p->left && p == g->right) {
+            rotate_right(p);
+            n = p;
+        } else {
+            // do nothing
+        }
 
-static void insert_case3(rbtree *t, rbnode *n)
-{
-    debug("insert case 3\n");
-    rbnode *p = n->parent;
-    rbnode *g = grandparent(n);
-    rbnode *u = uncle(n);
-    errcheck(p, "parent does not exist!");
-    errcheck(g, "grandparent does not exist!");
-    
-    if (u && RED == u->color) {
+        debug("insert case 5\n");
+        p = n->parent;
+        g = grandparent(n);
+        errcheck(p, "parent does not exist!");
+        errcheck(g, "grandparent does not exist!");
         p->color = BLACK;
-        u->color = BLACK;
         g->color = RED;
-        insert_case1(t, g);
-    } else {
-        insert_case4(t, n);
-    }
-}
-
-static void insert_case4(rbtree *t, rbnode *n)
-{
-    debug("insert case 4\n");
-    rbnode *p = n->parent;
-    rbnode *g = grandparent(n);
-    errcheck(p, "parent does not exist!");
-    errcheck(g, "grandparent does not exist!");
-    
-    if (n == p->right && p == g->left) {
-        rotate_left(p);
-        insert_case5(t, p);
-    } else if (n == p->left && p == g->right) {
-        rotate_right(p);
-        insert_case5(t, p);
-    } else {
-        insert_case5(t, n);
-    }
-}
-
-static void insert_case5(rbtree *t, rbnode *n)
-{
-    debug("insert case 5\n");
-    rbnode *p = n->parent;
-    rbnode *g = grandparent(n);
-    errcheck(p, "parent does not exist!");
-    errcheck(g, "grandparent does not exist!");
-    p->color = BLACK;
-    g->color = RED;
-    (n == p->left)?rotate_right(g):rotate_left(g);
-    if (!(p->parent)) {
-        debug("insert_case5: p parent is null!\n");
-        t->root = p;
+        (n == p->left)?rotate_right(g):rotate_left(g);
+        if (!(p->parent)) {
+            debug("insert_case5: p parent is null!\n");
+            t->root = p;
+        }
+        return;
     }
 }
 

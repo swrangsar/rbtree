@@ -1,6 +1,6 @@
 #include "rbtree.h"
 
-#define INIT_VAL 2
+#define INIT_VAL 0
 #define MAX 10
 
 int compare(const void *, const void *);
