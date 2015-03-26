@@ -31,12 +31,13 @@ static void remove_case5(rbtree *, rbnode *);
 static void remove_case6(rbtree *, rbnode *);
 
 
-rbtreeClass *rbtreeClassNew(const rbcmpf fa, const rbdstf fb)
+rbtreeClass *rbtreeClassNew(const rbcmpf fa, const rbdstf fb, const rbshwf fc)
 {
     rbtreeClass *k = malloc(sizeof(rbtreeClass));
     memcheck(k);
     k->cmp = fa;
     k->dst = fb;
+    k->shw = fc;
     return k;
 }
 
@@ -119,6 +120,7 @@ static void rbtreeClassDel(rbtreeClass *k)
 {
     k->cmp = NULL;
     k->dst = NULL;
+    k->shw = NULL;
     free(k);
     k = NULL;
 }
@@ -358,7 +360,10 @@ static void rbnodeRemove(rbtree *t, rbnode *n)
 {
     errcheck(t, "tree is null!");
     errcheck(n, "node is null!");
-    printf("%d is supposed to be deleted!\n", *(int *)n->data);
+    printf("data to be deleted is ");
+    errcheck(t->klass, "tree klass is null!");
+    errcheck(t->klass->shw, "tree klash shw is null!");
+    t->klass->shw(n->data);
     rbnode *p = n;
     if (n->left && n->right) {
         p = getPred(t, n);
@@ -383,9 +388,13 @@ static rbnode *getPred(rbtree *t, rbnode *n)
 
 static void removeChild(rbtree *t, rbnode *n)
 {
-    printf("trying to remove child with data %d\n", *(int *) n->data);
     errcheck(t, "tree is null!");
     errcheck(n, "node is null!");
+    printf("trying to remove child with data ");
+    errcheck(t->klass, "tree klass is null!");
+    errcheck(t->klass->shw, "tree klass shw is null!");
+    t->klass->shw(n->data);
+
     rbnode *c = (n->left)?(n->left):(n->right);
 
     if (n->color == BLACK) {
@@ -525,5 +534,24 @@ static void remove_case6(rbtree *t, rbnode *n)
 {
     errcheck(t, "tree is null!");
     errcheck(n, "node is null!");
-    printf("remove_case6 entered\n");
+    rbnode *p = n->parent;
+    rbnode *s = sibling(n);
+    errcheck(p, "parent is null!");
+    errcheck(s, "sibling is null!");
+    
+    s->color = p->color;
+    p->color = BLACK;
+    if (n == p->left) {
+        rotate_left(p);
+        errcheck(s->right, "rem case 6: sibling's child is null!");
+        errcheck(s->right->color == RED, "rem case 6: sibling's child is not red!");
+        s->right->color = BLACK;
+    } else {
+        rotate_right(p);
+        errcheck(s->left, "rem case 6: sibling's child is null!");
+        errcheck(s->left->color == RED, "rem case 6: sibling's child is not red!");
+        s->left->color = BLACK;
+    }
+    if (!s->parent) t->root = s;
+    printf("remove_case6 exited\n");
 }

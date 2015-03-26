@@ -18,10 +18,12 @@ typedef struct rbnode {
 
 typedef int (*rbcmpf) (const void *, const void *);
 typedef void (*rbdstf) (void *);
+typedef void (*rbshwf) (void *);
 
 typedef struct rbtreeClass {
     rbcmpf cmp;
     rbdstf dst;
+    rbshwf shw;
 } rbtreeClass;
 
 typedef struct rbtree {
@@ -29,7 +31,7 @@ typedef struct rbtree {
     rbtreeClass *klass;
 } rbtree;
 
-rbtreeClass *rbtreeClassNew(const rbcmpf, const rbdstf);
+rbtreeClass *rbtreeClassNew(const rbcmpf, const rbdstf, const rbshwf);
 rbtree *rbtreeNew(rbtreeClass *);
 void rbtreeDel(rbtree *);
 void rbtreeInsert(rbtree *, const void *);

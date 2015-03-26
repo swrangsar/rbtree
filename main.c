@@ -1,6 +1,8 @@
 #include "rbtree.h"
 
 int compare(const void *, const void *);
+void destroy(void *);
+void show(void *);
 
 int compare(const void *a, const void *b)
 {
@@ -25,11 +27,20 @@ void destroy(void *data)
     }
 }
 
+void show(void *data)
+{
+    if (data) {
+        printf("rbnode data:  %d\n", *(int *)data);
+    } else {
+        printf("data is null in show()!\n");
+    }
+}
+
 int main(const int argc, const char* argv[])
 {
     printf("main: rbtree test\n");
     
-    rbtreeClass *k = rbtreeClassNew((rbcmpf)compare, (rbdstf)destroy);
+    rbtreeClass *k = rbtreeClassNew((rbcmpf)compare, (rbdstf)destroy, (rbshwf)show);
 
     if (k) printf("main: rbtreeClass created.\n");
     rbtree *t = rbtreeNew(k);
@@ -43,7 +54,7 @@ int main(const int argc, const char* argv[])
 
     int iDel = 0;
     int i, h;
-    for (i=0, h=2; i < 10; i++) {
+    for (i=0, h=7; i < 10; i++) {
         int *ndata = malloc(sizeof(int));
         memcheck(ndata);
         *ndata = (h++) % 10;
