@@ -1,5 +1,7 @@
 #include "rbtree.h"
 
+#define INIT_VAL    0
+
 int compare(const void *, const void *);
 void destroy(void *);
 void show(void *);
@@ -54,7 +56,7 @@ int main(const int argc, const char* argv[])
 
     int iDel = 0;
     int i, h;
-    for (i=0, h=0; i < 10; i++) {
+    for (i=0, h=INIT_VAL; i < 10; i++) {
         int *ndata = malloc(sizeof(int));
         memcheck(ndata);
         *ndata = (h++) % 10;

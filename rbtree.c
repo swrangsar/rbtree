@@ -135,62 +135,65 @@ static void _rbtreeDel(rbtree *t, rbnode *n)
 
 static int _rbtreeInsert(rbtree *t, rbnode *r, rbnode *n)
 {
-    errcheck(t, "tree can't be null!");
+    errcheck(t, "tree is null!");
     errcheck(r, "rbnode *r is null!");
     errcheck(n, "rbnode *n is null!");
+    errcheck(t->klass, "tree klass is null!");
+    errcheck(t->klass->cmp, "cmp fn ptr is null!");
+
+    errcheck(n->data, "new data is null!");
+    errcheck(r->data, "old data is null!");
+
     int res = t->klass->cmp(n->data, r->data);
-    if (res < 0) {
-        if (r->left) {
-            return _rbtreeInsert(t, r->left, n);
+
+    while (res) {
+        if (res < 0) {
+            if (!r->left) {
+                r->left = n;
+                n->parent = r;
+                return -1;
+            }
+            r = r->left;
         } else {
-            r->left = n;
-            n->parent = r;
-            return -1;
+            if (!r->right) {
+                r->right = n;
+                n->parent = r;
+                return 1;
+            }
+            r = r->right;
         }
-    } else if (res > 0) {
-        if (r->right) {
-            return _rbtreeInsert(t, r->right, n);
+        res = t->klass->cmp(n->data, r->data);
+    }
+    
+
+    debug("_rbtreeInsert: rbnode already exist!\nreplacing node...\n");
+            
+    rbnode *op = r->parent;
+    rbnode *ol = r->left;
+    rbnode *or = r->right;
+    unsigned char oc = r->color;
+    if (op) {
+        if (r == op->left) {
+            op->left = n;
         } else {
-            r->right = n;
-            n->parent = r;
-            return 1;
+            op->right = n;
         }
     } else {
-        debug("_rbtreeInsert: rbnode already exist!\nreplacing node...\n");
-        
-        rbnode *op = r->parent;
-        rbnode *ol = r->left;
-        rbnode *or = r->right;
-        unsigned char oc = r->color;
-        if (op) {
-            if (r == op->left) {
-                op->left = n;
-            } else {
-                op->right = n;
-            }
-        } else {
-            t->root = n;
-        }
-        if (ol) ol->parent = n;
-        if (or) or->parent = n;
-        r->parent = n->parent;
-        r->left = n->left;
-        r->right = n->right;
-        
-        n->parent = op;
-        n->left = ol;
-        n->right = or;
-        n->color = oc;
-        
-        rbnodeDel(t, r);
-        return 0;
-//        void *td = r->data;
-//        r->data = n->data;
-//        n->data = td;
-//        rbnodeDel(t, n);
-//        n = NULL;
-//        return;
+        t->root = n;
     }
+    if (ol) ol->parent = n;
+    if (or) or->parent = n;
+    r->parent = n->parent;
+    r->left = n->left;
+    r->right = n->right;
+            
+    n->parent = op;
+    n->left = ol;
+    n->right = or;
+    n->color = oc;
+          
+    rbnodeDel(t, r);
+    return 0;
 }
 
 
