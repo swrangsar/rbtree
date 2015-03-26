@@ -140,12 +140,10 @@ static int _rbtreeInsert(rbtree *t, rbnode *r, rbnode *n)
     errcheck(n, "rbnode *n is null!");
     errcheck(t->klass, "tree klass is null!");
     errcheck(t->klass->cmp, "cmp fn ptr is null!");
-
     errcheck(n->data, "new data is null!");
     errcheck(r->data, "old data is null!");
 
     int res = t->klass->cmp(n->data, r->data);
-
     while (res) {
         if (res < 0) {
             if (!r->left) {
@@ -162,9 +160,9 @@ static int _rbtreeInsert(rbtree *t, rbnode *r, rbnode *n)
             }
             r = r->right;
         }
+        errcheck(r->data, "old data is null!");
         res = t->klass->cmp(n->data, r->data);
     }
-    
 
     debug("_rbtreeInsert: rbnode already exist!\nreplacing node...\n");
             
@@ -349,22 +347,21 @@ static void _rbtreeRemove(rbtree *t, rbnode *n, const void *d)
     errcheck(d, "data is null!");
     errcheck(t->klass, "tree klass is null!");
     errcheck(t->klass->cmp, "cmp fn ptr is null!");
+    errcheck(n->data, "node data is null!");
     int res = t->klass->cmp(d, n->data);
-    if (!res) {
-        rbnodeRemove(t, n);
-    } else if (res < 0) {
-        if (n->left) {
-            _rbtreeRemove(t, n->left, d);
+
+    while (res) {
+        if (res < 0) {
+            if (!n->left) return;
+            n = n->left;
         } else {
-            return;
+            if (!n->right) return;
+            n = n->right;
         }
-    } else {
-        if (n->right) {
-            _rbtreeRemove(t, n->right, d);
-        } else {
-            return;
-        }
+        errcheck(n->data, "node data is null!");
+        res = t->klass->cmp(d, n->data);
     }
+    rbnodeRemove(t, n);
 }
 
 static void rbnodeRemove(rbtree *t, rbnode *n)
